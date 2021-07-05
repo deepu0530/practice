@@ -60,12 +60,10 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
   Widget BuildBody(){
-    return  // Container(
-      //                     color: Colors.white,
-      //                     child:usersFollowersData!.items == null ?
-      //                     Container(
-      //                       child: CircularProgressIndicator(),
-      //                     ):
+    if(usersFollowersData==null){
+      return Center(child: CircularProgressIndicator());
+    }
+    return  
                           Container(
         child: ListView.separated(
           padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
@@ -101,6 +99,6 @@ class _UsersPageState extends State<UsersPage> {
           },
         ),
       );
-      //),
+     
   }
 }
