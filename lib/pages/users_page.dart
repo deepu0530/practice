@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:practice/models/model.dart';
 import 'package:practice/network/base_response.dart';
 import 'package:practice/network/users_manager.dart';
-import 'package:practice/pages/follower_page.dart';
+
+import 'package:practice/pages/followers.dart';
 
 class UsersPage extends StatefulWidget {
   @override
@@ -13,40 +14,59 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
+
+    bool fetching = true;
   UsersFollowersData? usersFollowersData;
-  Item? _item;
-  bool _loading = true;
-  Future<void> fetchSchedule() async {
+
+
+  void getData() async {
     setState(() {
-      _loading = true;
+      fetching = true;
     });
+    try {
+      final response = await userManager.fetchUsers();
+        if (response.status == ResponseStatus.SUCCESS) {
+          setState(() {
+            usersFollowersData = response.data;
 
-    final response = await userManager.fetchUsers();
-
-    if (response.status == ResponseStatus.SUCCESS) {
+            fetching = false;
+          });
+        fetching = false;
+        print(response);
+      }
+    } catch (e) {
       setState(() {
-        usersFollowersData = response.data;
-        _loading = false;
+        fetching = false;
       });
-    } else {
-      //ToastUtils().showToast(response.message);
+      print(e);
     }
   }
 
   @override
   void initState() {
+    getData();
     super.initState();
-    // setState(() {
-    //   _selectedIndex = widget.activeIndex;
-    // });
-    fetchSchedule();
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
+       body: BuildBody(),
+     
+    );
+  }
+  Widget BuildBody(){
+    return  // Container(
+      //                     color: Colors.white,
+      //                     child:usersFollowersData!.items == null ?
+      //                     Container(
+      //                       child: CircularProgressIndicator(),
+      //                     ):
+                          Container(
         child: ListView.separated(
           padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
           scrollDirection: Axis.vertical,
@@ -55,16 +75,19 @@ class _UsersPageState extends State<UsersPage> {
           primary: false,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            final i = usersFollowersData!.items![index];
+            //final i = usersFollowersData!.items![index];
             return InkWell(
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FollowerButton()));
+                          builder: (context) => FollowersList(
+                            followersimages:usersFollowersData!.items![index].avatarUrl,
+                            username:usersFollowersData!.items![index].login,
+                          )));
                 },
                 child: Text(
-                  i.login,
+                  "${usersFollowersData!.items![index].login}" ,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 20,
@@ -77,7 +100,7 @@ class _UsersPageState extends State<UsersPage> {
             );
           },
         ),
-      ),
-    );
+      );
+      //),
   }
 }

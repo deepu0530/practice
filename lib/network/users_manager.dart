@@ -12,7 +12,7 @@ class UsersManager{
 
     Response response;
     try {
-      response = await dioClient.ref
+      response = await dioClient.ref!
           .get<dynamic>(URLS.url());
 
       if(response.statusCode == 200) {
